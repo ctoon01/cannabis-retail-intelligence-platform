@@ -26,6 +26,32 @@ def clean_text_columns(df):
 
     return df
 
+def standardize_categories(df):
+    if "category" not in df.columns:
+        return df
+
+    df["category"] = df["category"].astype(str).str.strip().str.lower()
+
+    category_map = {
+        "flower": "Flower",
+        "flowers": "Flower",
+        "vape": "Vape Cartridges",
+        "vape cartridges": "Vape Cartridges",
+        "edible": "Edibles",
+        "edibles": "Edibles",
+        "pre-rolls": "Pre-Rolls",
+        "preroll": "Pre-Rolls",
+        "topical": "Topicals",
+        "topicals": "Topicals",
+        "beverage": "Beverages",
+        "beverages": "Beverages",
+        "concentrate": "Concentrates",
+        "concentrates": "Concentrates",
+    }
+
+    df["category"] = df["category"].replace(category_map)
+
+    return df
 
 def clean_dates(df):
     for col in df.columns:
@@ -61,6 +87,7 @@ def clean_file(file_path):
 
     df = clean_column_names(df)
     df = clean_text_columns(df)
+    df = standardize_categories(df)
     df = clean_dates(df)
     df = df.drop_duplicates()
 
