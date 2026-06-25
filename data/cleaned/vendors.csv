@@ -1,0 +1,51 @@
+vendor_id,vendor_name,vendor_type,city,lead_time_days
+1,Emerald Farms,Producer/Grower,Medford,10.0
+2,Three Sisters Trading Co.,Distributor,Hood River,4.0
+3,North Fork Supply,Wholesaler,Coos Bay,13.0
+4,Sasquatch Logistics,Distributor,Lebanon,
+5,Crater Lake Genetics,Producer/Grower,Lebanon,6.0
+6,Rogue Valley Gardens,Producer/Grower,TILLAMOOK,11.0
+7,Fern Canyon Supply Co.,Distributor,Medford,5.0
+8,Cascade Extracts,Processor/Extractor,Roseburg,10.0
+9,Deschutes Trading,Wholesaler,Eugene,8.0
+10,Sasquatch Supply Co.,Distributor,Medford,12.0
+11,Willamette Logistics,Distributor,Newport,5.0
+12,Siskiyou Edibles Co.,Processor/Extractor,Grants Pass,14.0
+13,Gold Beach Farms,Producer/Grower,Grants Pass,7.0
+14,Emerald Gardens,Producer/Grower,Salem,3.0
+15,Crater Lake Concentrates Co.,Processor/Extractor,Albany,9.0
+16,Salmon Run Edibles Co.,Processor/Extractor,Springfield,5.0
+17,Blue Mountain Grow Co.,Producer/Grower,Albany,10.0
+18,Three Sisters Grow Co.,Producer/Grower,Roseburg,7.0
+19,Silver Falls Extracts,Processor/Extractor,Forest Grove,9.0
+20,Gold Beach Distribution,Distributor,eugene,5.0
+21,High Desert Concentrates Co.,Processor/Extractor,Corvallis,14.0
+22,Siskiyou Farms,Producer/Grower,Newport,2.0
+23,Sasquatch Distribution,Distributor,Eugene,7.0
+24,Blue Mountain Labs,Processor/Extractor,Klamath Falls,10.0
+25,Timberline Goods Co.,Wholesaler,Portland,11.0
+26,Deschutes Cultivation,Producer/Grower,Eugene,14.0
+27,Sasquatch Extracts,Processor/Extractor,Cottage Grove,12.0
+28,Emerald Genetics,Producer/Grower,Springfield,8.0
+29,North Fork Labs,Processor/Extractor,Eugene,7.0
+30,Pacific Trading,Wholesaler,Salem,15.0
+31,Salmon Run Cultivation,Producer/Grower,The Dalles,9.0
+32,Fern Canyon Extracts,Processor/Extractor,PENDLETON,7.0
+33,Salmon Run Logistics,Distributor,Hillsboro,2.0
+34,High Desert Gardens,Producer/Grower,Newport,10.0
+35,Pacific Farms,Producer/Grower,Newport,10.0
+36,Salmon Run Distribution,Distributor,Salem,6.0
+37,Siskiyou Supply,Wholesaler,Tigard,10.0
+38,Three Sisters Distribution,Distributor,Medford,12.0
+39,Coastal Range Gardens,Producer/Grower,Albany,8.0
+40,Crater Lake Trading Co.,Distributor,Hillsboro,5.0
+41,Emerald Wholesale,Wholesaler,Ashland,9.0
+42,Old Growth Edibles Co.,Processor/Extractor,Portland,10.0
+43,High Desert Genetics,Producer/Grower,Eugene,6.0
+44,Salmon Run Trading,Wholesaler,Pendleton,17.0
+45,Coastal Range Trading,Wholesaler,Forest Grove,6.0
+46,High Desert Trading,Wholesaler,Corvallis,15.0
+47,Old Growth Supply Co.,Distributor,Hillsboro,18.0
+48,Blue Mountain Trading,Wholesaler,Albany,5.0
+49,Crater Lake Extracts,Processor/Extractor,Lebanon,7.0
+50,Gold Beach Genetics,Producer/Grower,Klamath Falls,11.0
