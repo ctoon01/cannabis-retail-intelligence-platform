@@ -1,0 +1,77 @@
+employee_id,first_name,last_name,store_id,position,hire_date,hourly_rate,employment_status
+1,Christine,Davis,1,store manager,2022-02-18,28.94,Active
+2,Patricia,Mitchell,1,Assistant Manager,2022-06-19,26.33,Active
+3,Donna,Thomas,1,Inventory Specialist,2022-01-27,20.73,Active
+4,Mark,Rodriguez,1,Security,2020-06-18,19.82,Active
+5,Diego,Miller,1,Security,2024-06-02,20.43,Active
+6,Marcus,Mitchell,1,Budtender,2021-08-09,16.87,Active
+7,Brenda,Garcia,1,Budtender,2024-10-15,18.14,Active
+8,Emma,Ramirez,1,Budtender,2022-12-22,16.64,Active
+9,John,Johnson,1,Budtender,2020-08-03,17.34,Active
+10,Barbara,Wilson,1,Budtender,2023-03-06,18.82,Active
+11,Ashley,Allen,1,Budtender,2022-06-18,17.58,Active
+12,Samantha,Johnson,1,Budtender,2021-08-02,17.43,Active
+13,Pamela,Gonzalez,1,Budtender,2021-10-22,16.86,Active
+14,Aiko,Adams,1,Budtender,2021-03-04,18.07,Active
+15,Maria,Wright,1,Budtender,2022-09-20,19.22,Active
+16,Laura,Anderson,1,Budtender,2024-07-01,17.37,Active
+17,Kathleen,Nguyen,1,Budtender,2022-12-30,19.18,Active
+18,Donna,Ortiz,1,Budtender,2021-06-24,18.95,Terminated
+19,James,Carter,1,Budtender,2022-07-04,16.86,Active
+20,Christopher,Hall,1,Cashier,2021-06-29,16.23,On Leave
+21,Jason,Perez,1,Cashier,2019-10-13,16.72,Active
+22,Donna,Martinez,1,Cashier,2021-07-22,17.47,Active
+23,Sandra,Carter,1,Cashier,2022-10-11,16.24,Active
+24,Melissa,Miller,1,Cashier,2020-12-23,16.14,Active
+25,Barbara,Harris,1,Cashier,2023-01-13,16.52,Active
+26,Richard,Thompson,1,Cashier,2020-04-27,17.37,Active
+27,Brian,Hill,2,Store Manager,2021-05-27,29.55,Active
+28,Emily,Ortiz,2,Assistant Manager,2021-06-18,23.37,Active
+29,Jennifer,Campbell,2,Inventory Specialist,2022-02-09,21.9,Terminated
+30,Ryan,Wright,2,Security,2022-07-06,18.65,Terminated
+31,Jessica,Harris,2,security,2023-11-05,20.19,Active
+32,William,Scott,2,Budtender,2020-09-18,17.48,Active
+33,Michelle,Kim,2,Budtender,2023-04-02,16.78,Active
+34,Benjamin,Flores,2,Budtender,2022-03-24,19.18,Active
+35,George,Torres,2,Budtender,2021-05-20,17.09,Active
+36,Matthew,Rivera,2,Budtender,2020-11-18,19.24,Active
+37,David,Williams,2,Cashier,2023-04-01,16.09,Active
+38,Tyler,Anderson,2,Cashier,2021-04-15,17.37,Active
+39,Michelle,Garcia,2,Cashier,2021-04-05,15.78,Active
+40,Ashley,Tran,3,Store Manager,2021-09-09,30.16,Active
+41,Richard,Harris,3,Assistant Manager,2021-11-11,25.05,Active
+42,Donna,Robinson,3,Inventory Specialist,2021-12-03,22.56,Active
+43,Christine,Kim,3,Security,2021-06-22,19.86,Active
+44,George,Hernandez,3,Security,2025-02-22,21.29,Active
+45,Stephanie,Thompson,3,Budtender,2023-12-21,18.37,Active
+46,Anthony,Nelson,3,Budtender,2023-04-22,18.68,On Leave
+47,Paul,Hall,3,Budtender,2023-09-13,19.39,Terminated
+48,Dana,Adams,3,Budtender,2023-12-08,17.25,Active
+49,Elizabeth,Hill,3,Budtender,2023-09-25,18.71,Active
+50,Christine,Hernandez,3,Budtender,2025-03-03,18.77,Active
+51,Jonathan,Campbell,3,Budtender,2021-04-01,16.79,Active
+52,Kimberly,Hernandez,3,Budtender,2023-08-30,18.35,Active
+53,Amy,Harris,3,Budtender,2020-02-26,19.07,Active
+54,Paul,Green,3,Budtender,2020-05-10,18.26,Terminated
+55,Carlos,Scott,3,Cashier,2020-07-07,16.59,Terminated
+56,Mark,Baker,3,Cashier,2020-07-03,16.14,Terminated
+57,Amanda,Kim,3,Cashier,2022-02-25,16.89,Active
+58,Linda,Anderson,3,Cashier,2022-07-16,15.85,Active
+59,John,Ortiz,3,Cashier,2023-03-19,17.05,Active
+60,Kenneth,Sanchez,4,Store Manager,2022-12-23,32.53,Active
+61,Paul,Jones,4,Assistant Manager,2022-11-27,26.58,Active
+62,Sandra,Torres,4,Inventory Specialist,2023-01-03,,Active
+63,Aiko,Lee,4,Security,2024-03-06,21.01,Active
+64,Sandra,Adams,4,Security,2022-01-05,20.2,Active
+65,Angela,Sanchez,4,Budtender,2022-12-28,18.78,Active
+66,Samuel,Robinson,4,Budtender,2022-09-21,18.97,Active
+67,Charles,Taylor,4,Budtender,2024-04-29,19.34,On Leave
+68,Sarah,Thomas,4,Budtender,2022-03-18,18.18,Active
+69,Olga,Scott,4,Budtender,2023-01-17,17.91,Active
+70,Jonathan,Taylor,4,Budtender,2022-01-16,18.25,On Leave
+71,Olga,Nguyen,4,Budtender,2022-01-11,19.39,Active
+72,Jason,Nguyen,4,CASHIER,2022-08-28,16.61,On Leave
+73,Sharon,White,4,Cashier,2025-02-30,16.76,Active
+74,Mark,Rodriguez,4,Cashier,2022-08-24,15.88,Active
+75,Helen,Young,4,Cashier,2023-01-15,17.47,Active
+26,Richard,Thompson,1,Cashier,2020-04-27,17.37,Active
