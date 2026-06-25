@@ -19,7 +19,7 @@ def clean_column_names(df):
 
 
 def clean_text_columns(df):
-    text_cols = df.select_dtypes(include="object").columns
+    text_cols = df.select_dtypes(include=["object", "string"]).columns
 
     for col in text_cols:
         df[col] = df[col].astype(str).str.strip()
@@ -35,6 +35,25 @@ def clean_dates(df):
     return df
 
 
+def validate_data(df, filename):
+    print(f"\nValidation Report: {filename}")
+    print("-" * 50)
+
+    print(f"Rows: {len(df):,}")
+    print(f"Columns: {len(df.columns)}")
+
+    missing = df.isnull().sum()
+    missing = missing[missing > 0]
+
+    if len(missing):
+        print("\nMissing Values:")
+        print(missing)
+    else:
+        print("\nNo missing values found.")
+
+    print("-" * 50)
+
+
 def clean_file(file_path):
     df = pd.read_csv(file_path)
 
@@ -44,6 +63,8 @@ def clean_file(file_path):
     df = clean_text_columns(df)
     df = clean_dates(df)
     df = df.drop_duplicates()
+
+    validate_data(df, file_path.name)
 
     output_path = CLEANED_DIR / file_path.name
     df.to_csv(output_path, index=False)
