@@ -1,6 +1,5 @@
 import pandas as pd
 import streamlit as st
-from sqlalchemy import create_engine
 
 from charts import (
     display_dashboard,
@@ -9,15 +8,8 @@ from charts import (
     revenue_by_store,
     top_brands,
 )
+from data_loader import load_data
 from metrics import display_kpis
-from queries import (
-    BRAND_QUERY,
-    CATEGORY_QUERY,
-    KPI_QUERY,
-    MONTHLY_QUERY,
-    STORE_QUERY,
-    EXECUTIVE_CALLOUTS_QUERY,
-)
 from styles import load_css
 
 st.set_page_config(
@@ -28,62 +20,29 @@ st.set_page_config(
 
 load_css()
 
-DATABASE_URL = "postgresql+psycopg2://localhost:5433/cannabis_retail"
-engine = create_engine(DATABASE_URL)
-
-
-@st.cache_data
-def load_query(query):
-    return pd.read_sql(query, engine)
-
-
 st.title("🌿 Cannabis Retail Intelligence Dashboard")
+
+df = load_data()
 
 st.sidebar.header("Dashboard Filters")
 
-stores = load_query("""
-SELECT DISTINCT store_id
-FROM sales_transactions
-ORDER BY store_id;
-""")
-
 selected_store = st.sidebar.selectbox(
     "Select Store",
-    ["All"] + stores["store_id"].astype(str).tolist(),
+    ["All"] + sorted(df["store_id"].dropna().astype(str).unique().tolist()),
 )
-
-categories = load_query("""
-SELECT DISTINCT category
-FROM products
-ORDER BY category;
-""")
 
 selected_category = st.sidebar.selectbox(
     "Select Category",
-    ["All"] + categories["category"].astype(str).tolist(),
+    ["All"] + sorted(df["category"].dropna().astype(str).unique().tolist()),
 )
-
-brands = load_query("""
-SELECT DISTINCT brand
-FROM products
-ORDER BY brand;
-""")
 
 selected_brand = st.sidebar.selectbox(
     "Select Brand",
-    ["All"] + brands["brand"].astype(str).tolist(),
+    ["All"] + sorted(df["brand"].dropna().astype(str).unique().tolist()),
 )
 
-date_bounds = load_query("""
-SELECT
-    MIN(transaction_date::date) AS min_date,
-    MAX(transaction_date::date) AS max_date
-FROM sales_transactions
-WHERE transaction_date IS NOT NULL;
-""")
-
-min_date = pd.to_datetime(date_bounds["min_date"].iloc[0]).date()
-max_date = pd.to_datetime(date_bounds["max_date"].iloc[0]).date()
+min_date = df["transaction_date"].min().date()
+max_date = df["transaction_date"].max().date()
 
 selected_start, selected_end = st.sidebar.slider(
     "Date Range",
@@ -92,39 +51,67 @@ selected_start, selected_end = st.sidebar.slider(
     value=(min_date, max_date),
 )
 
-filters = [
-    f"s.transaction_date::date BETWEEN '{selected_start}' AND '{selected_end}'"
+filtered_df = df.copy()
+
+filtered_df = filtered_df[
+    (filtered_df["transaction_date"].dt.date >= selected_start)
+    & (filtered_df["transaction_date"].dt.date <= selected_end)
 ]
 
 if selected_store != "All":
-    filters.append(f"s.store_id = {selected_store}")
+    filtered_df = filtered_df[filtered_df["store_id"].astype(str) == selected_store]
 
 if selected_category != "All":
-    filters.append(f"p.category = '{selected_category}'")
+    filtered_df = filtered_df[filtered_df["category"] == selected_category]
 
 if selected_brand != "All":
-    filters.append(f"p.brand = '{selected_brand}'")
+    filtered_df = filtered_df[filtered_df["brand"] == selected_brand]
 
-where_clause = "WHERE " + " AND ".join(filters)
+total_revenue = filtered_df["net_revenue"].sum()
+estimated_profit = (
+    (filtered_df["retail_price"] - filtered_df["unit_cost"])
+    * filtered_df["quantity_sold"]
+).sum()
+profit_margin = (estimated_profit / total_revenue * 100) if total_revenue else 0
 
-kpi_df = load_query(KPI_QUERY.format(where_clause=where_clause))
-category_df = load_query(CATEGORY_QUERY.format(where_clause=where_clause))
-brand_df = load_query(BRAND_QUERY.format(where_clause=where_clause))
-store_df = load_query(STORE_QUERY.format(where_clause=where_clause))
-monthly_df = load_query(MONTHLY_QUERY.format(where_clause=where_clause))
+kpis = {
+    "total_revenue": total_revenue,
+    "estimated_profit": estimated_profit,
+    "profit_margin": profit_margin,
+    "transactions": len(filtered_df),
+    "units_sold": filtered_df["quantity_sold"].sum(),
+    "average_sale": filtered_df["net_revenue"].mean(),
+}
 
-callouts_df = load_query(EXECUTIVE_CALLOUTS_QUERY.format(where_clause=where_clause))
-callouts = callouts_df.iloc[0]
+display_kpis(kpis)
 
-callout1, callout2, callout3 = st.columns(3)
+category_df = (
+    filtered_df.groupby("category", as_index=False)["net_revenue"]
+    .sum()
+    .rename(columns={"net_revenue": "revenue"})
+    .sort_values("revenue", ascending=False)
+)
 
-callout1.metric("🏪 Top Store", callouts["top_store"])
-callout2.metric("🏷️ Top Brand", callouts["top_brand"])
-callout3.metric("🌿 Top Category", callouts["top_category"])
+store_df = (
+    filtered_df.groupby("store_id", as_index=False)
+    .agg(revenue=("net_revenue", "sum"), transactions=("transaction_id", "count"))
+    .sort_values("revenue", ascending=False)
+)
 
-st.divider()
+brand_df = (
+    filtered_df.groupby("brand", as_index=False)["net_revenue"]
+    .sum()
+    .rename(columns={"net_revenue": "revenue"})
+    .sort_values("revenue", ascending=False)
+    .head(10)
+)
 
-display_kpis(kpi_df.iloc[0])
+monthly_df = (
+    filtered_df.assign(month=filtered_df["transaction_date"].dt.to_period("M").dt.to_timestamp())
+    .groupby("month", as_index=False)["net_revenue"]
+    .sum()
+    .rename(columns={"net_revenue": "revenue"})
+)
 
 fig_category = revenue_by_category(category_df)
 fig_store = revenue_by_store(store_df)
