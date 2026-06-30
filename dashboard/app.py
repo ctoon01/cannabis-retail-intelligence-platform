@@ -53,6 +53,20 @@ selected_store = st.sidebar.selectbox(
     ["All"] + stores["store_id"].astype(str).tolist(),
 )
 
+st.sidebar.markdown("---")
+
+date_options = [
+    "All Time",
+    "Last 30 Days",
+    "Last 90 Days",
+    "Last Year",
+]
+
+selected_date = st.sidebar.selectbox(
+    "Date Range",
+    date_options,
+)
+
 categories = load_query(
     """
     SELECT DISTINCT category
@@ -82,10 +96,22 @@ selected_brand = st.sidebar.selectbox(
 
 filters = []
 filters_with_alias = []
+date_filter = ""
+
+if selected_date == "Last 30 Days":
+    date_filter = "transaction_date::date >= CURRENT_DATE - INTERVAL '30 days'"
+elif selected_date == "Last 90 Days":
+    date_filter = "transaction_date::date >= CURRENT_DATE - INTERVAL '90 days'"
+elif selected_date == "Last Year":
+    date_filter = "transaction_date::date >= CURRENT_DATE - INTERVAL '1 year'"
 
 if selected_store != "All":
     filters.append(f"store_id = {selected_store}")
     filters_with_alias.append(f"s.store_id = {selected_store}")
+    
+if date_filter:
+    filters.append(date_filter)
+    filters_with_alias.append(f"s.{date_filter}")
 
 if selected_category != "All":
     filters_with_alias.append(f"p.category = '{selected_category}'")
