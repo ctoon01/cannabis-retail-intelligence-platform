@@ -1,3 +1,4 @@
+from styles import load_css
 import pandas as pd
 import streamlit as st
 from sqlalchemy import create_engine
@@ -23,6 +24,8 @@ st.set_page_config(
     page_icon="🌿",
     layout="wide",
 )
+
+load_css()
 
 DATABASE_URL = "postgresql+psycopg2://localhost:5433/cannabis_retail"
 engine = create_engine(DATABASE_URL)
