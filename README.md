@@ -16,7 +16,7 @@ An end-to-end Business Intelligence dashboard built with **Python**, **PostgreSQ
 
 ### Interactive Filters
 
-![Filters](dashboard_screenshots/filters.png)
+![Filters](dashboard_screenshots/filter.png)
 
 ### Executive Insights
 
