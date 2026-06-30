@@ -67,3 +67,35 @@ JOIN products p
 GROUP BY month
 ORDER BY month;
 """
+EXECUTIVE_CALLOUTS_QUERY = """
+SELECT
+    (
+        SELECT s.store_id::text
+        FROM sales_transactions s
+        JOIN products p ON s.product_id = p.product_id
+        {where_clause}
+        GROUP BY s.store_id
+        ORDER BY SUM(s.net_revenue) DESC
+        LIMIT 1
+    ) AS top_store,
+
+    (
+        SELECT p.brand
+        FROM sales_transactions s
+        JOIN products p ON s.product_id = p.product_id
+        {where_clause}
+        GROUP BY p.brand
+        ORDER BY SUM(s.net_revenue) DESC
+        LIMIT 1
+    ) AS top_brand,
+
+    (
+        SELECT p.category
+        FROM sales_transactions s
+        JOIN products p ON s.product_id = p.product_id
+        {where_clause}
+        GROUP BY p.category
+        ORDER BY SUM(s.net_revenue) DESC
+        LIMIT 1
+    ) AS top_category;
+"""

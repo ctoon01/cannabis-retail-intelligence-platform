@@ -16,6 +16,7 @@ from queries import (
     KPI_QUERY,
     MONTHLY_QUERY,
     STORE_QUERY,
+    EXECUTIVE_CALLOUTS_QUERY,
 )
 from styles import load_css
 
@@ -111,6 +112,17 @@ category_df = load_query(CATEGORY_QUERY.format(where_clause=where_clause))
 brand_df = load_query(BRAND_QUERY.format(where_clause=where_clause))
 store_df = load_query(STORE_QUERY.format(where_clause=where_clause))
 monthly_df = load_query(MONTHLY_QUERY.format(where_clause=where_clause))
+
+callouts_df = load_query(EXECUTIVE_CALLOUTS_QUERY.format(where_clause=where_clause))
+callouts = callouts_df.iloc[0]
+
+callout1, callout2, callout3 = st.columns(3)
+
+callout1.metric("🏪 Top Store", callouts["top_store"])
+callout2.metric("🏷️ Top Brand", callouts["top_brand"])
+callout3.metric("🌿 Top Category", callouts["top_category"])
+
+st.divider()
 
 display_kpis(kpi_df.iloc[0])
 
