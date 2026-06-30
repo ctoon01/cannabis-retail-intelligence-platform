@@ -1,4 +1,3 @@
-from styles import load_css
 import pandas as pd
 import streamlit as st
 from sqlalchemy import create_engine
@@ -18,6 +17,7 @@ from queries import (
     MONTHLY_QUERY,
     STORE_QUERY,
 )
+from styles import load_css
 
 st.set_page_config(
     page_title="Cannabis Retail Intelligence",
@@ -40,99 +40,77 @@ st.title("🌿 Cannabis Retail Intelligence Dashboard")
 
 st.sidebar.header("Dashboard Filters")
 
-stores = load_query(
-    """
-    SELECT DISTINCT store_id
-    FROM sales_transactions
-    ORDER BY store_id;
-    """
-)
+stores = load_query("""
+SELECT DISTINCT store_id
+FROM sales_transactions
+ORDER BY store_id;
+""")
 
 selected_store = st.sidebar.selectbox(
     "Select Store",
     ["All"] + stores["store_id"].astype(str).tolist(),
 )
 
-st.sidebar.markdown("---")
-
-date_options = [
-    "All Time",
-    "Last 30 Days",
-    "Last 90 Days",
-    "Last Year",
-]
-
-selected_date = st.sidebar.selectbox(
-    "Date Range",
-    date_options,
-)
-
-categories = load_query(
-    """
-    SELECT DISTINCT category
-    FROM products
-    ORDER BY category;
-    """
-)
+categories = load_query("""
+SELECT DISTINCT category
+FROM products
+ORDER BY category;
+""")
 
 selected_category = st.sidebar.selectbox(
     "Select Category",
     ["All"] + categories["category"].astype(str).tolist(),
 )
 
-brands = load_query(
-    """
-    SELECT DISTINCT brand
-    FROM products
-    ORDER BY brand;
-    """
-)
+brands = load_query("""
+SELECT DISTINCT brand
+FROM products
+ORDER BY brand;
+""")
 
 selected_brand = st.sidebar.selectbox(
     "Select Brand",
     ["All"] + brands["brand"].astype(str).tolist(),
 )
 
+date_bounds = load_query("""
+SELECT
+    MIN(transaction_date::date) AS min_date,
+    MAX(transaction_date::date) AS max_date
+FROM sales_transactions
+WHERE transaction_date IS NOT NULL;
+""")
 
-filters = []
-filters_with_alias = []
-date_filter = ""
+min_date = pd.to_datetime(date_bounds["min_date"].iloc[0]).date()
+max_date = pd.to_datetime(date_bounds["max_date"].iloc[0]).date()
 
-if selected_date == "Last 30 Days":
-    date_filter = "transaction_date::date >= CURRENT_DATE - INTERVAL '30 days'"
-elif selected_date == "Last 90 Days":
-    date_filter = "transaction_date::date >= CURRENT_DATE - INTERVAL '90 days'"
-elif selected_date == "Last Year":
-    date_filter = "transaction_date::date >= CURRENT_DATE - INTERVAL '1 year'"
-
-if selected_store != "All":
-    filters.append(f"store_id = {selected_store}")
-    filters_with_alias.append(f"s.store_id = {selected_store}")
-    
-if date_filter:
-    filters.append(date_filter)
-    filters_with_alias.append(f"s.{date_filter}")
-
-if selected_category != "All":
-    filters_with_alias.append(f"p.category = '{selected_category}'")
-
-if selected_brand != "All":
-    filters_with_alias.append(f"p.brand = '{selected_brand}'")
-
-store_filter = "WHERE " + " AND ".join(filters) if filters else ""
-store_filter_with_alias = "WHERE " + " AND ".join(filters_with_alias) if filters_with_alias else ""
-
-monthly_store_filter = (
-    "AND " + " AND ".join(filters)
-    if filters
-    else ""
+selected_start, selected_end = st.sidebar.slider(
+    "Date Range",
+    min_value=min_date,
+    max_value=max_date,
+    value=(min_date, max_date),
 )
 
-kpi_df = load_query(KPI_QUERY.format(store_filter_with_alias=store_filter_with_alias))
-category_df = load_query(CATEGORY_QUERY.format(store_filter_with_alias=store_filter_with_alias))
-brand_df = load_query(BRAND_QUERY.format(store_filter_with_alias=store_filter_with_alias))
-store_df = load_query(STORE_QUERY)
-monthly_df = load_query(MONTHLY_QUERY.format(monthly_store_filter=monthly_store_filter))
+filters = [
+    f"s.transaction_date::date BETWEEN '{selected_start}' AND '{selected_end}'"
+]
+
+if selected_store != "All":
+    filters.append(f"s.store_id = {selected_store}")
+
+if selected_category != "All":
+    filters.append(f"p.category = '{selected_category}'")
+
+if selected_brand != "All":
+    filters.append(f"p.brand = '{selected_brand}'")
+
+where_clause = "WHERE " + " AND ".join(filters)
+
+kpi_df = load_query(KPI_QUERY.format(where_clause=where_clause))
+category_df = load_query(CATEGORY_QUERY.format(where_clause=where_clause))
+brand_df = load_query(BRAND_QUERY.format(where_clause=where_clause))
+store_df = load_query(STORE_QUERY.format(where_clause=where_clause))
+monthly_df = load_query(MONTHLY_QUERY.format(where_clause=where_clause))
 
 display_kpis(kpi_df.iloc[0])
 

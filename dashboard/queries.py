@@ -15,9 +15,8 @@ SELECT
 FROM sales_transactions s
 JOIN products p
     ON s.product_id = p.product_id
-{store_filter_with_alias};
+{where_clause};
 """
-
 
 CATEGORY_QUERY = """
 SELECT
@@ -26,11 +25,10 @@ SELECT
 FROM sales_transactions s
 JOIN products p
     ON s.product_id = p.product_id
-{store_filter_with_alias}
+{where_clause}
 GROUP BY p.category
 ORDER BY revenue DESC;
 """
-
 
 BRAND_QUERY = """
 SELECT
@@ -39,31 +37,33 @@ SELECT
 FROM sales_transactions s
 JOIN products p
     ON s.product_id = p.product_id
-{store_filter_with_alias}
+{where_clause}
 GROUP BY p.brand
 ORDER BY revenue DESC
 LIMIT 10;
 """
 
-
 STORE_QUERY = """
 SELECT
-    store_id,
-    ROUND(SUM(net_revenue)::numeric, 2) AS revenue,
+    s.store_id,
+    ROUND(SUM(s.net_revenue)::numeric, 2) AS revenue,
     COUNT(*) AS transactions
-FROM sales_transactions
-GROUP BY store_id
+FROM sales_transactions s
+JOIN products p
+    ON s.product_id = p.product_id
+{where_clause}
+GROUP BY s.store_id
 ORDER BY revenue DESC;
 """
 
-
 MONTHLY_QUERY = """
 SELECT
-    DATE_TRUNC('month', transaction_date::date) AS month,
-    ROUND(SUM(net_revenue)::numeric, 2) AS revenue
-FROM sales_transactions
-WHERE transaction_date IS NOT NULL
-{monthly_store_filter}
+    DATE_TRUNC('month', s.transaction_date::date) AS month,
+    ROUND(SUM(s.net_revenue)::numeric, 2) AS revenue
+FROM sales_transactions s
+JOIN products p
+    ON s.product_id = p.product_id
+{where_clause}
 GROUP BY month
 ORDER BY month;
 """

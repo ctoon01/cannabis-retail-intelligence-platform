@@ -3,14 +3,20 @@ import streamlit as st
 
 
 def revenue_by_category(df):
-    fig = px.bar(
+    fig = px.pie(
         df,
-        x="category",
-        y="revenue",
-        title="Revenue by Category",
+        names="category",
+        values="revenue",
+        title="Revenue Share by Category",
+        hole=0.45,
     )
-    return fig
 
+    fig.update_traces(
+        textposition="inside",
+        textinfo="percent+label",
+    )
+
+    return fig
 
 def revenue_by_store(df):
     fig = px.bar(
