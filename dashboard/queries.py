@@ -1,11 +1,21 @@
 KPI_QUERY = """
 SELECT
-    ROUND(SUM(net_revenue)::numeric, 2) AS total_revenue,
-    ROUND(AVG(net_revenue)::numeric, 2) AS average_sale,
+    ROUND(SUM(s.net_revenue)::numeric, 2) AS total_revenue,
+    ROUND(SUM((p.retail_price - p.unit_cost) * s.quantity_sold)::numeric, 2) AS estimated_profit,
+    ROUND(
+        (
+            SUM((p.retail_price - p.unit_cost) * s.quantity_sold)
+            / NULLIF(SUM(s.net_revenue), 0)
+        )::numeric * 100,
+        2
+    ) AS profit_margin,
+    ROUND(AVG(s.net_revenue)::numeric, 2) AS average_sale,
     COUNT(*) AS transactions,
-    SUM(quantity_sold) AS units_sold
-FROM sales_transactions
-{store_filter};
+    SUM(s.quantity_sold) AS units_sold
+FROM sales_transactions s
+JOIN products p
+    ON s.product_id = p.product_id
+{store_filter_with_alias};
 """
 
 

@@ -54,7 +54,7 @@ store_filter = "" if selected_store == "All" else f"WHERE store_id = {selected_s
 store_filter_with_alias = "" if selected_store == "All" else f"WHERE s.store_id = {selected_store}"
 monthly_store_filter = "" if selected_store == "All" else f"AND store_id = {selected_store}"
 
-kpi_df = load_query(KPI_QUERY.format(store_filter=store_filter))
+kpi_df = load_query(KPI_QUERY.format(store_filter_with_alias=store_filter_with_alias))
 category_df = load_query(CATEGORY_QUERY.format(store_filter_with_alias=store_filter_with_alias))
 brand_df = load_query(BRAND_QUERY.format(store_filter_with_alias=store_filter_with_alias))
 store_df = load_query(STORE_QUERY)
