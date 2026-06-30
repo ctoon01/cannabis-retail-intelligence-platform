@@ -15,3 +15,13 @@ def display_kpis(kpis):
     col6.metric("💳 Average Sale", f"${kpis['average_sale']:,.2f}")
 
     st.divider()
+
+
+def display_callouts(callouts):
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric("🏪 Top Store", callouts["top_store"])
+    col2.metric("🏷️ Top Brand", callouts["top_brand"])
+    col3.metric("🌿 Top Category", callouts["top_category"])
+
+    st.divider()

@@ -10,48 +10,35 @@ def revenue_by_category(df):
         title="Revenue Share by Category",
         hole=0.45,
     )
-
-    fig.update_traces(
-        textposition="inside",
-        textinfo="percent+label",
-    )
-
+    fig.update_traces(textposition="inside", textinfo="percent+label")
     return fig
+
 
 def revenue_by_store(df):
-    fig = px.bar(
-        df,
-        x="store_id",
-        y="revenue",
-        title="Revenue by Store",
-    )
-    return fig
+    return px.bar(df, x="store_id", y="revenue", title="Revenue by Store")
 
 
 def top_brands(df):
-    fig = px.bar(
+    return px.bar(
         df,
         x="revenue",
         y="brand",
         orientation="h",
-        title="Top 10 Brands",
+        title="Top 10 Brands by Revenue",
     )
-    return fig
 
 
 def monthly_revenue(df):
-    fig = px.line(
+    return px.line(
         df,
         x="month",
         y="revenue",
         markers=True,
-        title="Monthly Revenue",
+        title="Monthly Revenue Trend",
     )
-    return fig
 
 
 def display_dashboard(fig1, fig2, fig3, fig4):
-
     left, right = st.columns(2)
 
     with left:

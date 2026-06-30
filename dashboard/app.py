@@ -9,7 +9,8 @@ from charts import (
     top_brands,
 )
 from data_loader import load_data
-from metrics import display_kpis
+from insights import display_insights
+from metrics import display_callouts, display_kpis
 from styles import load_css
 
 st.set_page_config(
@@ -21,6 +22,9 @@ st.set_page_config(
 load_css()
 
 st.title("🌿 Cannabis Retail Intelligence Dashboard")
+st.caption(
+    "An interactive business intelligence dashboard for analyzing cannabis retail sales, profit, product categories, brands, and store performance."
+)
 
 df = load_data()
 
@@ -73,17 +77,16 @@ estimated_profit = (
     * filtered_df["quantity_sold"]
 ).sum()
 profit_margin = (estimated_profit / total_revenue * 100) if total_revenue else 0
+average_sale = filtered_df["net_revenue"].mean() if len(filtered_df) else 0
 
 kpis = {
     "total_revenue": total_revenue,
     "estimated_profit": estimated_profit,
     "profit_margin": profit_margin,
     "transactions": len(filtered_df),
-    "units_sold": filtered_df["quantity_sold"].sum(),
-    "average_sale": filtered_df["net_revenue"].mean(),
+    "units_sold": int(filtered_df["quantity_sold"].sum()),
+    "average_sale": average_sale,
 }
-
-display_kpis(kpis)
 
 category_df = (
     filtered_df.groupby("category", as_index=False)["net_revenue"]
@@ -107,11 +110,22 @@ brand_df = (
 )
 
 monthly_df = (
-    filtered_df.assign(month=filtered_df["transaction_date"].dt.to_period("M").dt.to_timestamp())
+    filtered_df.assign(
+        month=filtered_df["transaction_date"].dt.to_period("M").dt.to_timestamp()
+    )
     .groupby("month", as_index=False)["net_revenue"]
     .sum()
     .rename(columns={"net_revenue": "revenue"})
 )
+
+callouts = {
+    "top_store": str(store_df["store_id"].iloc[0]) if not store_df.empty else "N/A",
+    "top_brand": brand_df["brand"].iloc[0] if not brand_df.empty else "N/A",
+    "top_category": category_df["category"].iloc[0] if not category_df.empty else "N/A",
+}
+
+display_kpis(kpis)
+display_callouts(callouts)
 
 fig_category = revenue_by_category(category_df)
 fig_store = revenue_by_store(store_df)
@@ -119,3 +133,24 @@ fig_brand = top_brands(brand_df)
 fig_monthly = monthly_revenue(monthly_df)
 
 display_dashboard(fig_category, fig_store, fig_brand, fig_monthly)
+
+display_insights(kpis, callouts, category_df, store_df)
+
+with st.expander("About this project"):
+    st.markdown(
+        """
+        This dashboard is part of an end-to-end cannabis retail business intelligence project.
+
+        The project includes:
+
+        - Python ETL pipeline
+        - Data cleaning and validation
+        - PostgreSQL database loading
+        - SQL business analysis
+        - Streamlit dashboard
+        - Interactive filtering
+        - Executive KPIs and insights
+
+        The dataset is synthetic and used for portfolio and learning purposes.
+        """
+    )
