@@ -53,9 +53,54 @@ selected_store = st.sidebar.selectbox(
     ["All"] + stores["store_id"].astype(str).tolist(),
 )
 
-store_filter = "" if selected_store == "All" else f"WHERE store_id = {selected_store}"
-store_filter_with_alias = "" if selected_store == "All" else f"WHERE s.store_id = {selected_store}"
-monthly_store_filter = "" if selected_store == "All" else f"AND store_id = {selected_store}"
+categories = load_query(
+    """
+    SELECT DISTINCT category
+    FROM products
+    ORDER BY category;
+    """
+)
+
+selected_category = st.sidebar.selectbox(
+    "Select Category",
+    ["All"] + categories["category"].astype(str).tolist(),
+)
+
+brands = load_query(
+    """
+    SELECT DISTINCT brand
+    FROM products
+    ORDER BY brand;
+    """
+)
+
+selected_brand = st.sidebar.selectbox(
+    "Select Brand",
+    ["All"] + brands["brand"].astype(str).tolist(),
+)
+
+
+filters = []
+filters_with_alias = []
+
+if selected_store != "All":
+    filters.append(f"store_id = {selected_store}")
+    filters_with_alias.append(f"s.store_id = {selected_store}")
+
+if selected_category != "All":
+    filters_with_alias.append(f"p.category = '{selected_category}'")
+
+if selected_brand != "All":
+    filters_with_alias.append(f"p.brand = '{selected_brand}'")
+
+store_filter = "WHERE " + " AND ".join(filters) if filters else ""
+store_filter_with_alias = "WHERE " + " AND ".join(filters_with_alias) if filters_with_alias else ""
+
+monthly_store_filter = (
+    "AND " + " AND ".join(filters)
+    if filters
+    else ""
+)
 
 kpi_df = load_query(KPI_QUERY.format(store_filter_with_alias=store_filter_with_alias))
 category_df = load_query(CATEGORY_QUERY.format(store_filter_with_alias=store_filter_with_alias))
