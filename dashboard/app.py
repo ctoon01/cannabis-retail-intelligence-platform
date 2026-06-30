@@ -1,16 +1,29 @@
 import pandas as pd
-import plotly.express as px
 import streamlit as st
 from sqlalchemy import create_engine
 
-# Page setup
+from charts import (
+    display_dashboard,
+    monthly_revenue,
+    revenue_by_category,
+    revenue_by_store,
+    top_brands,
+)
+from metrics import display_kpis
+from queries import (
+    BRAND_QUERY,
+    CATEGORY_QUERY,
+    KPI_QUERY,
+    MONTHLY_QUERY,
+    STORE_QUERY,
+)
+
 st.set_page_config(
     page_title="Cannabis Retail Intelligence",
     page_icon="🌿",
     layout="wide",
 )
 
-# Database connection
 DATABASE_URL = "postgresql+psycopg2://localhost:5433/cannabis_retail"
 engine = create_engine(DATABASE_URL)
 
@@ -20,10 +33,8 @@ def load_query(query):
     return pd.read_sql(query, engine)
 
 
-# Title
 st.title("🌿 Cannabis Retail Intelligence Dashboard")
 
-# Sidebar filters
 st.sidebar.header("Dashboard Filters")
 
 stores = load_query(
@@ -41,129 +52,19 @@ selected_store = st.sidebar.selectbox(
 
 store_filter = "" if selected_store == "All" else f"WHERE store_id = {selected_store}"
 store_filter_with_alias = "" if selected_store == "All" else f"WHERE s.store_id = {selected_store}"
+monthly_store_filter = "" if selected_store == "All" else f"AND store_id = {selected_store}"
 
-# KPI query
-kpi_query = f"""
-SELECT
-    ROUND(SUM(net_revenue)::numeric, 2) AS total_revenue,
-    ROUND(AVG(net_revenue)::numeric, 2) AS average_sale,
-    COUNT(*) AS transactions,
-    SUM(quantity_sold) AS units_sold
-FROM sales_transactions
-{store_filter};
-"""
+kpi_df = load_query(KPI_QUERY.format(store_filter=store_filter))
+category_df = load_query(CATEGORY_QUERY.format(store_filter_with_alias=store_filter_with_alias))
+brand_df = load_query(BRAND_QUERY.format(store_filter_with_alias=store_filter_with_alias))
+store_df = load_query(STORE_QUERY)
+monthly_df = load_query(MONTHLY_QUERY.format(monthly_store_filter=monthly_store_filter))
 
-kpis = load_query(kpi_query).iloc[0]
+display_kpis(kpi_df.iloc[0])
 
-col1, col2, col3, col4 = st.columns(4)
-col1.metric("Total Revenue", f"${kpis['total_revenue']:,.2f}")
-col2.metric("Transactions", f"{kpis['transactions']:,}")
-col3.metric("Units Sold", f"{kpis['units_sold']:,}")
-col4.metric("Average Sale", f"${kpis['average_sale']:,.2f}")
+fig_category = revenue_by_category(category_df)
+fig_store = revenue_by_store(store_df)
+fig_brand = top_brands(brand_df)
+fig_monthly = monthly_revenue(monthly_df)
 
-st.divider()
-
-# Revenue by category
-category_query = f"""
-SELECT
-    p.category,
-    ROUND(SUM(s.net_revenue)::numeric, 2) AS revenue
-FROM sales_transactions s
-JOIN products p
-    ON s.product_id = p.product_id
-{store_filter_with_alias}
-GROUP BY p.category
-ORDER BY revenue DESC;
-"""
-
-category_df = load_query(category_query)
-
-fig_category = px.bar(
-    category_df,
-    x="category",
-    y="revenue",
-    title="Revenue by Category",
-)
-
-# Top brands
-brand_query = f"""
-SELECT
-    p.brand,
-    ROUND(SUM(s.net_revenue)::numeric, 2) AS revenue
-FROM sales_transactions s
-JOIN products p
-    ON s.product_id = p.product_id
-{store_filter_with_alias}
-GROUP BY p.brand
-ORDER BY revenue DESC
-LIMIT 10;
-"""
-
-brand_df = load_query(brand_query)
-
-fig_brand = px.bar(
-    brand_df,
-    x="revenue",
-    y="brand",
-    orientation="h",
-    title="Top 10 Brands by Revenue",
-)
-
-# Revenue by store
-store_query = """
-SELECT
-    store_id,
-    ROUND(SUM(net_revenue)::numeric, 2) AS revenue,
-    COUNT(*) AS transactions
-FROM sales_transactions
-GROUP BY store_id
-ORDER BY revenue DESC;
-"""
-
-store_df = load_query(store_query)
-
-fig_store = px.bar(
-    store_df,
-    x="store_id",
-    y="revenue",
-    title="Revenue by Store",
-)
-
-# Monthly revenue trend
-monthly_query = f"""
-SELECT
-    DATE_TRUNC('month', transaction_date::date) AS month,
-    ROUND(SUM(net_revenue)::numeric, 2) AS revenue
-FROM sales_transactions
-WHERE transaction_date IS NOT NULL
-{"AND store_id = " + selected_store if selected_store != "All" else ""}
-GROUP BY month
-ORDER BY month;
-"""
-
-monthly_df = load_query(monthly_query)
-
-fig_monthly = px.line(
-    monthly_df,
-    x="month",
-    y="revenue",
-    title="Monthly Revenue Trend",
-    markers=True,
-)
-
-# Dashboard layout
-left, right = st.columns(2)
-
-with left:
-    st.plotly_chart(fig_category, use_container_width=True)
-
-with right:
-    st.plotly_chart(fig_store, use_container_width=True)
-
-left, right = st.columns(2)
-
-with left:
-    st.plotly_chart(fig_brand, use_container_width=True)
-
-with right:
-    st.plotly_chart(fig_monthly, use_container_width=True)
+display_dashboard(fig_category, fig_store, fig_brand, fig_monthly)
